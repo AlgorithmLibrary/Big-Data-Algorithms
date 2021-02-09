@@ -103,20 +103,7 @@ int main()
 	cout << endl;
 	}
 
-	//Stochastic Averaging
-	float summation = 0.0;
-	for(int a = 0; a < number_of_buckets; a++)
-	{
-	summation = summation + buckets[a];
-	}
-
-	float power = summation / number_of_buckets;
-	cout << summation << endl;
-
-	float total_cardinality = 0.794 * number_of_buckets * pow(2, power);
-
 	//Harmonic Mean
-	/*
 	float summation = 0.0;
 	for(int a = 0; a < number_of_buckets; a++)
 	{
@@ -126,10 +113,22 @@ int main()
 	cout << summation << endl;
 
 	float total_cardinality = 0.794 * number_of_buckets * number_of_buckets / summation;
+
+	//Stochastic Averaging
+	/*
+	float summation = 0.0;
+	for(int a = 0; a < number_of_buckets; a++)
+	{
+		summation = summation + buckets[a];
+	}
+
+	float power = summation / number_of_buckets;
+	cout << summation << endl;
+
+	float total_cardinality = 0.794 * number_of_buckets * pow(2, power);
 	*/
 
 	cout << "Total Cardinality is " << total_cardinality << endl;
-
 
 	return 0;
 }
