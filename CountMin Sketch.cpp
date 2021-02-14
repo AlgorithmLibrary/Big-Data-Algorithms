@@ -11,11 +11,16 @@
 
 using namespace std;
 
-int n = 15;
+float alpha = 0.19;
+float epsilon = alpha / 4.0;
 
-const int t = 20;
-const int L = n;
+const int t = (2.0 / epsilon);
+
+//const int t = 30;
+//const int L = n;
 const int k = 2;
+
+int count[15];
 
 int remainder(int a, int b)
 {
@@ -41,7 +46,8 @@ int hash_function(int x, int f1, int f2, int t2)
 	return bucket;
 }
 
-int CM_function(int hashing_table[][20], int hashing_factors[][2], int n, int t1, int i)
+//int CM_function(int hashing_table[][t], int hashing_factors[][k], int n, int t1, int L, int i)
+int CM_function(int **hashing_table, int hashing_factors[][k], int n, int t1, int L, int i)
 {
 	int minimum = 1000;
 
@@ -54,18 +60,37 @@ int CM_function(int hashing_table[][20], int hashing_factors[][2], int n, int t1
 			minimum = hashing_table[r][result];
 		}
 	}
-	return minimum;
+
+	if (minimum == 1000)
+	{
+		return 0;
+	}
+	else
+	{
+		return minimum;
+	}
 }
 
-int main()
+bool CountMin(int points[], int n, int seed)
 {
-	int seed = 8;
+	//float epsilon = 2.0 / float(t);
+	//float alpha = 4.0 * epsilon;
+
+	float delta = 0.01 * alpha / (4.0 * log(n));
+
+	//cout << "Delta is " << delta << endl;
 
 	int p = 608308871;
 
-	int points[n] = {1, 3, 5, 6, 8, 11, 15, 2, 3, 5, 21, 18, 19, 3, 5};
+	int L = int(log(1 / delta));
 
-	int hashing_table[L][t];
+	int **hashing_table;
+
+	hashing_table = new int *[L];
+	for(int m = 0; m < L; m++)
+	{
+	    hashing_table[m] = new int[t];
+	}
 
 	for (int u1 = 0 ; u1 < L; u1++)
 	{
@@ -75,8 +100,8 @@ int main()
 		}
 	}
 
-	cout << "Hashing length " << t << endl;
-	cout << "Number of Hash functions: " << L << endl;
+	//cout << "Hashing length " << t << endl;
+	//cout << "Number of Hash functions: " << L << endl;
 
 	int hashing_factors[L][k];
 
@@ -105,16 +130,14 @@ int main()
 			int result = hash_function(c, hashing_factors[d][0], hashing_factors[d][1], t);
 			if (hashing_table[d][result] == 100)
 			{
-				hashing_table[d][result] = 1;
+				hashing_table[d][result] = points[c];
 			}
 			else
 			{
-				hashing_table[d][result] = hashing_table[d][result] + 1;
+				hashing_table[d][result] = hashing_table[d][result] + points[c];
 			}
 		}
 	}
-
-	int q = 11;
 
 	int x = 0;
 
@@ -125,16 +148,94 @@ int main()
 
 	int low_setting = 3;
 
-	cout << "The heavy hitters occuring at least " << low_setting << " times:" << endl;
+	//cout << "The heavy hitters occuring at least " << low_setting << " times:" << endl;
+
+	bool hitters = false;
+
+	float lowest_value = (3 * alpha / 4) * x;
+
+	//cout << lowest_value << endl;
 
 	for (int j = 0; j < n; j++)
 	{
-		int result = CM_function(hashing_table, hashing_factors, n, t, j);
+		int result = CM_function(hashing_table, hashing_factors, n, t, L, j);
 
-		if (result >= 3)
+		//cout << result << endl;
+
+		if (result >= lowest_value)
 		{
-			cout << "Heavy Hitter " << j << endl;
+			//cout << "Heavy Hitter is present" << endl;
+			//cout << "Heavy Hitter " << points[j] << endl;
+			count[points[j]]++;
+			hitters = true;
 		}
+	}
+	cout << endl;
+
+	return hitters;
+}
+
+void heavy_hitter(int points[], int n, int seed)
+{
+	if (n == 1)
+	{
+		//cout << "Selected point " << points[0] << endl;
+		count[points[0]]++;
+		return;
+	}
+
+	bool r;
+
+	if (n == 15)
+	{
+		r = true;
+	}
+	else
+	{
+		r = CountMin(points, n, seed);
+	}
+
+	if (r == true)
+	{
+		int middle = int(n / 2);
+
+		int n1 = middle;
+		int n2 = n - middle;
+
+		int first_array[n1];
+		int second_array[n2];
+
+		for (int i = 0; i < n1; i++)
+		{
+			first_array[i] = points[i];
+		}
+
+		for (int j = 0; j < n2; j++)
+		{
+			second_array[j] = points[n1 + j];
+		}
+
+		heavy_hitter(first_array, n1, seed);
+		heavy_hitter(second_array, n2, seed);
+	}
+	return;
+}
+
+int main()
+{
+	int seed = 8;
+
+	int p = 608308871;
+
+	int n = 15;
+
+	int points[n] = {1, 3, 5, 6, 8, 11, 15, 2, 3, 5, 21, 18, 19, 3, 5};
+
+	heavy_hitter(points, n, seed);
+
+	for (int j = 0; j < n; j++)
+	{
+		cout << count[j] << endl;
 	}
 
 	return 0;
