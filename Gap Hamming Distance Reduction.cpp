@@ -1,5 +1,5 @@
 /*
- * Gap Hamming Distance.cpp
+ * Gap Hamming Distance Reduction.cpp
  *
  *  Created on: 19 Feb 2021
  *      Author: Grant
