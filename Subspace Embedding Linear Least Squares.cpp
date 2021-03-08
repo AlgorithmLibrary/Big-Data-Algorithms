@@ -709,6 +709,7 @@ int main()
 		{
 			b_matrix[c3][0] = b_matrix[c3][0] / tS[counter2];
 		}
+		counter2++;
 	}
 	cout << endl;
 
@@ -751,6 +752,41 @@ int main()
 		cout << x[row1] << endl;
 	}
 
+
+
+
+
+
+
+	for (int end1 = 0; end1 < n; end1++)
+	{
+		delete[] result2[end1];
+	}
+	delete[] result2;
+
+	for (int end2 = 0; end2 < n; end2++)
+	{
+		delete[] result3[end2];
+	}
+	delete[] result3;
+
+	for (int end3 = 0; end3 < num_values; end3++)
+	{
+		delete[] b_matrix[end3];
+	}
+	delete[] b_matrix;
+
+	for (int end4 = 0; end4 < m6; end4++)
+	{
+		delete[] u_matrix[end4];
+	}
+	delete[] u_matrix;
+
+	for (int end5 = 0; end5 < k6; end5++)
+	{
+		delete[] v_matrix[end5];
+	}
+	delete[] v_matrix;
 
 	delete[] tU;
 	delete[] tS;

@@ -376,205 +376,6 @@ int main()
 {
 	srand(18);
 
-	/*
-
-	int n111 = 8;
-	int p111 = 8;
-
-	float A_Original[n][p] = {{3, 2, 6, 1, 9, 1, 5, 9},
-				         {1, 8, 5, 3, 1, 9, 1, 6},
-						 {2, 5, 1, 9, 3, 8, 1, 3},
-						 {5, 1, 6, 8, 3, 5, 6, 1},
-						 {2, 3, 8, 1, 5, 1, 1, 3},
-						 {1, 8, 3, 2, 1, 8, 2, 9},
-						 {5, 1, 8, 1, 2, 3, 5, 1},
-						 {2, 3, 6, 1, 5, 8, 5, 9}};
-
-
-
-	typedef float Real_t;
-	int h1=n, h2=p;
-
-
-	// Create matrix
-	Real_t* M_Original =new Real_t[h1*h2];
-
-	int counter_original = 0;
-	for (int w = 0; w < h1; w++)
-	{
-		for (int w1 = 0; w1 < h2; w1++)
-		{
-			M_Original[counter_original] = A_Original[w][w1];
-			cout << A_Original[w][w1] << " ";
-			counter_original++;
-		}
-		cout << endl;
-	}
-
-	int m8 = h2;
-	int n8 = h1;
-	int k8 = (m8<n8?m8:n8);
-	//int k6 = max(m6, n6);
-	Real_t* tU1 =new Real_t[m8*k8];
-	Real_t* tS1 =new Real_t[k8];
-	Real_t* tVT1=new Real_t[k8*n8];
-
-	{ // Compute SVD
-		 	int INFO=0;
-		    char JOBU  = 'S';
-		    char JOBVT = 'S';
-		    int wssize = 3*(m8<n8?m8:n8)+(m8>n8?m8:n8);
-		    int wssize1 = 5*(m8<n8?m8:n8);
-		    wssize = (wssize>wssize1?wssize:wssize1);
-		    Real_t* wsbuf = new Real_t[wssize];
-		    svd(&JOBU, &JOBVT, &m8, &n8, &M_Original[0], &m8, &tS1[0], &tU1[0], &m8, &tVT1[0], &k8, wsbuf, &wssize, &INFO);
-		    delete[] wsbuf;
-	}
-
-	{ // Check Error
-		    Real_t max_err=0;
-		    for(size_t i0=0;i0<m8;i0++)
-		    for(size_t i1=0;i1<n8;i1++){
-		      Real_t E=M_Original[i1*m8+i0];
-		      for(size_t i2=0;i2<k8;i2++) E-=tU1[i2*m8+i0]*tS1[i2]*tVT1[i1*k8+i2];
-		      if(max_err<fabs(E)) max_err=fabs(E);
-		    }
-		    std::cout<<max_err<<'\n';
-	}
-	cout << endl;
-
-	float** A_Original_matrix = new float*[n8];
-
-		for (int original = 0; original < n8; original++)
-		{
-			A_Original_matrix[original] = new float[m8];
-		}
-
-		for (int original1 = 0; original1 < n8; original1++)
-		{
-			for (int original2 = 0; original2 < m8; original2++)
-			{
-			A_Original_matrix[original1][original2] = A_Original[original1][original2];
-			}
-		}
-
-	cout << "Sigma Matrix" << endl;
-
-	//float* s_matrix1 = new float[k8];
-	const int number = k8;
-
-	float** sigma_matrix = new float*[k8];
-
-	for (int w111 = 0; w111 < k8; w111++)
-	{
-		sigma_matrix[w111] = new float[k8];
-	}
-
-	int counter21 = 0;
-	for (int c31 = 0; c31 < k8; c31++)
-	{
-		cout << tS1[counter21] << endl;
-
-		for (int c311 = 0; c311 < k8; c311++)
-		{
-			if (c31 == c311)
-			{
-				sigma_matrix[c31][c311] = 1.0 / tS1[counter21];
-			}
-			else
-			{
-				sigma_matrix[c31][c311] = 0.0;
-			}
-		}
-
-		counter21++;
-	}
-	cout << endl;
-
-	cout << "V Matrix" << endl;
-	float** v_matrix1 = new float*[k8];
-
-	for (int w11 = 0; w11 < k8; w11++)
-	{
-		v_matrix1[w11] = new float[n8];
-	}
-
-	int counter31 = 0;
-	for (int c41 = 0; c41 < k8; c41++)
-	{
-		for (int c51 = 0; c51 < n8; c51++)
-		{
-			cout << tVT1[counter31] << " ";
-			v_matrix1[c41][c51] = tVT1[counter31];
-			counter31++;
-		}
-		cout << endl;
-	}
-	cout << endl;
-
-	//float inv[8][8];
-
-	//INV(s_matrix1, inv);
-
-	float** result_initial1 = pointer_product2(v_matrix1, sigma_matrix, k8, n8, k8, k8);
-	float** result_initial2 = pointer_product2(A_Original_matrix, result_initial1, n, p, k8, k8);
-
-	float A[n][p];
-
-	cout << "A bar matrix" << endl;
-	for (int initial_r1 = 0; initial_r1 < n; initial_r1++)
-	{
-		for (int initial_r2 = 0; initial_r2 < k8; initial_r2++)
-		{
-			cout << result_initial2[initial_r1][initial_r2] << " ";
-			A[initial_r1][initial_r2] = result_initial2[initial_r1][initial_r2];
-		}
-		cout << endl;
-	}
-
-
-
-
-	for (int initial1=0; initial1<k8; initial1++)
-	{
-		delete [] result_initial1[initial1];
-	}
-	delete [] result_initial1;
-
-	for (int initial2=0; initial2<n; initial2++)
-	{
-		delete [] result_initial2[initial2];
-	}
-	delete [] result_initial2;
-
-	for (int initial3=0; initial3<n; initial3++)
-	{
-		delete [] A_Original_matrix[initial3];
-	}
-	delete [] A_Original_matrix;
-
-
-	for (int i111=0; i111<k8; i111++)
-	{
-		delete [] sigma_matrix[i111];
-	}
-	delete [] sigma_matrix;
-
-	for (int i11=0; i11<k8; i11++)
-	{
-	    delete [] v_matrix1[i11];
-	    //delete [] s_matrix1[i11];
-	}
-	delete [] v_matrix1;
-	//delete [] s_matrix1;
-
-	delete[] tU1;
-	delete[] tS1;
-	delete[] tVT1;
-	delete[] M_Original;
-
-	*/
-
 	float epsilon = 0.6;
 	float delta = 0.9;
 	//int m = 3;
@@ -1115,7 +916,7 @@ int main()
 
 	float** x_temp = x_matrix;
 
-	for (int iterate = 0; iterate < 1; iterate++)
+	for (int iterate = 0; iterate < 2; iterate++)
 	{
 		x_temp = gradient_descent(result_initial2, x_temp, b_matrix, result_initial2_T, k6, p, n, 1, num_values, 1, p, k6);
 		//x_temp = gradient_descent(A_Original_matrix, x_temp, b_matrix, A_Original_matrix_T, k6, p, n, 1, num_values, 1, p, k6);
@@ -1127,6 +928,84 @@ int main()
 	}
 
 	cout << "HERE" << endl;
+
+
+
+
+
+
+
+	for (int end1 = 0; end1 < n; end1++)
+	{
+		delete[] result2[end1];
+	}
+	delete[] result2;
+
+	for (int end2 = 0; end2 < n; end2++)
+	{
+		delete[] result3[end2];
+	}
+	delete[] result3;
+
+	for (int end3 = 0; end3 < num_values; end3++)
+	{
+		delete[] b_matrix[end3];
+	}
+	delete[] b_matrix;
+
+	for (int end4 = 0; end4 < m6; end4++)
+	{
+		delete[] u_matrix[end4];
+	}
+	delete[] u_matrix;
+
+	for (int end5 = 0; end5 < k6; end5++)
+	{
+		delete[] sigma_matrix[end5];
+	}
+	delete[] sigma_matrix;
+
+	for (int end6 = 0; end6 < k6; end6++)
+	{
+		delete[] v_matrix[end6];
+	}
+	delete[] v_matrix;
+
+	for (int end7 = 0; end7 < n; end7++)
+	{
+		delete[] x_matrix[end7];
+	}
+	delete[] x_matrix;
+
+	for (int end8 = 0; end8 < num_values; end8++)
+	{
+		delete[] A_Original_matrix[end8];
+	}
+	delete[] A_Original_matrix;
+
+	for (int end9 = 0; end9 < p; end9++)
+	{
+		delete[] A_Original_matrix_T[end9];
+	}
+	delete[] A_Original_matrix_T;
+
+	for (int end10 = 0; end10 < k6; end10++)
+	{
+		delete[] result_initial1[end10];
+	}
+	delete[] result_initial1;
+
+	for (int end11 = 0; end11 < k6; end11++)
+	{
+		delete[] result_initial2[end11];
+	}
+	delete[] result_initial2;
+
+	for (int end12 = 0; end12 < p; end12++)
+	{
+		delete[] result_initial2_T[end12];
+	}
+	delete[] result_initial2_T;
 
 	delete[] tU;
 	delete[] tS;
